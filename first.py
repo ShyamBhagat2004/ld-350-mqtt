@@ -19,6 +19,39 @@ def parse_nmea_sentence(sentence):
 
     # Remove the checksum part after '*'
     checksum_index = parts[-1].find('*')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     if checksum_index != -1:
         parts[-1] = parts[-1][:checksum_index]
 
