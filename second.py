@@ -34,13 +34,32 @@ assert ep is not None
 
 # Initialize data storage
 data_list = []
+data_counter = {}
+
+# Function to convert byte data to hex string
+def bytes_to_hex(data):
+    return ' '.join(f'{b:02x}' for b in data)
 
 # Read data for 10 seconds
 start_time = time.time()
 try:
-    while time.time() - start_time < 10:
-        data = dev.read(ep.bEndpointAddress, ep.wMaxPacketSize)
-        data_list.append(data.tolist())
+    while time.time() - start_time < 100:
+        try:
+            data = dev.read(ep.bEndpointAddress, ep.wMaxPacketSize, timeout=1000)
+            hex_data = bytes_to_hex(data)
+            ascii_data = data.tobytes().decode('ascii', errors='ignore').strip()  # Decode bytes to ASCII string
+            timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+            if ascii_data:  # Check if data is not empty
+                print(f"Hex data: {hex_data}")  # Debug print
+                print(f"Received data: {ascii_data}")  # Debug print
+                if ascii_data in data_counter:
+                    data_counter[ascii_data] += 1
+                else:
+                    data_counter[ascii_data] = 1
+                data_list.append([timestamp, ascii_data, data_counter[ascii_data]])
+        except usb.core.USBError as e:
+            print(f"USBError: {e}")
+            continue
 except KeyboardInterrupt:
     print("Exiting...")
 
@@ -50,7 +69,7 @@ usb.util.release_interface(dev, intf)
 # Write data to a CSV file
 with open('usb_data.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(["Data"])  # Write header
+    writer.writerow(["Timestamp", "Data", "Count"])  # Write header
     writer.writerows(data_list)
 
 print("Data collection complete. Data written to usb_data.csv")
