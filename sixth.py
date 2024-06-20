@@ -7,7 +7,7 @@ def send_command(command):
     command += '\r'  # Ensure the command ends with a carriage return
     try:
         dev.write(endpoint_out, command.encode('utf-8'))
-        print(f'Command "{command.strip()}" sent')
+       # print(f'Command "{command.strip()}" sent')
     except usb.core.USBError as e:
         print(f'Error sending command "{command.strip()}": {e}')
 
@@ -59,6 +59,11 @@ try:
         except usb.core.USBError as e:
             print(f'Error reading data: {e}')
         time.sleep(1)  # Delay between reads
+        send_command("RESET")
+        send_command("RAW 1")
+        send_command("RAW 1\n")
+        send_command("RESET\n")
+
         
 except KeyboardInterrupt:
     print('Interrupted by user')
