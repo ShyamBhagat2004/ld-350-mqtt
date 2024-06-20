@@ -50,7 +50,7 @@ try:
             # Add your data processing logic here
         except usb.core.USBError as e:
             print('Error reading data: %s' % str(e))
-        time.sleep(1)
+        
 except KeyboardInterrupt:
     print('Interrupted by user')
 
