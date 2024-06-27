@@ -1,22 +1,24 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Set the working directory in the container
-WORKDIR /app
-
-# Copy the current directory contents into the container at /app
-COPY . /app
-
-# Install the necessary system packages
-RUN apt-get update && apt-get install -y \
-    libusb-1.0-0-dev \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /usr/src/app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir pyusb
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
+# Install USB libraries
+RUN apt-get update && apt-get install -y \
+    libusb-1.0-0 \
+    libusb-1.0-0-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-# Run usb_read.py when the container launches
-CMD ["python", "usb_read.py"]
+# Copy the current directory contents into the container at /usr/src/app
+COPY . .
+
+# Make port 1883 available to the world outside this container
+EXPOSE 1883
+
+# Run main.py when the container launches
+CMD ["python", "seventh_two_current.py"]
