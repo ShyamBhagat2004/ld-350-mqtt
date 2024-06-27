@@ -119,7 +119,7 @@ try:
                     print(f"Failed to send message to topic {topic}")
         except usb.core.USBError as e:
             print(f'Interface {interface}: Error reading data: {e}')
-        time.sleep(0.1)
+        time.sleep(0.2)
 
 except KeyboardInterrupt:
     print('Interrupted by user')
