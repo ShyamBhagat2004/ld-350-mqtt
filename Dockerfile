@@ -21,4 +21,4 @@ COPY . .
 EXPOSE 1883
 
 # Run main.py when the container launches
-CMD ["python", "seventh_two_current.py"]
+CMD ["python", "main.py"]

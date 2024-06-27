@@ -1,5 +1,6 @@
 numpy==1.26.4
 paho-mqtt==2.1.0
 pynmea2==1.19.0
+python-usbtmc==0.8
 pyusb==1.2.1
 usb==0.0.83.dev0
