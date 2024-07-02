@@ -1,6 +1,4 @@
 
----
-
 # Project Documentation: Python Application for LD-350 Lightning Detector Data Handling
 
 ## Introduction
@@ -57,6 +55,3 @@ This document details the Python application designed to interface with LD-350 l
 
 ## Conclusion
 This application integrates hardware interfacing, real-time data processing, and network communication to monitor and analyze lightning data effectively. Future enhancements could include dynamic configuration features and broader device support.
-
----
-
