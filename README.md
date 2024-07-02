@@ -44,7 +44,7 @@ This document details the Python application designed to interface with LD-350 l
 
 ## Special Features
 ### Keep-Alive Mechanism
-- **USB Connection Maintenance**: Sends a keep-alive packet every second to maintain the USB connection.
+- **USB Connection Maintenance**: Sends a keep-alive packet every second to maintain the USB connection. This is ESSENTIAL for continued output, and has to be sent in HEX to the LD-350. 
 
 ### Daemon Thread for File Maintenance
 - **Background File Clearing**: A daemon thread clears the output file at regular intervals, preventing application termination due to this thread.
