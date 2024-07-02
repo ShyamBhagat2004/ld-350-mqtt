@@ -255,4 +255,3 @@ finally:
 - **MQTT Client Setup**: This part sets up the MQTT client, defines the broker and topic, and connects to the broker.
 - **Main Loop**: Continuously reads data from the USB device, processes it, logs it to a file, and publishes it to the MQTT topic. If the script is interrupted, it releases the USB interface and disconnects from the MQTT broker.
 
-This detailed documentation provides a comprehensive understanding of the script, its functions, and how they interconnect to achieve the desired functionality.
