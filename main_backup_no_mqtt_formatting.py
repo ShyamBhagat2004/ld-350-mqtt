@@ -4,15 +4,6 @@ import sys
 import time
 import threading
 import paho.mqtt.client as mqtt_client
-import threading
-
-def empty_file_every_120_seconds(file_path):
-    while True:
-        time.sleep(30)  # Wait for 120 seconds
-        with open(file_path, "w+") as file:
-            file.write("")  # Empty the file
-        print("File has been emptied")
-threading.Thread(target=empty_file_every_120_seconds, args=("nmea_output.txt",), daemon=True).start()
 
 def send_command(dev, interface, endpoint_address, command):
     command += '\r'  # Ensure the command ends with a carriage return
@@ -109,10 +100,6 @@ send_command(dev, interface, endpoint_out, "RAW 1")
 # Start keep alive thread for the first interface
 threading.Thread(target=send_keep_alive, args=(dev, endpoint_out), daemon=True).start()
 
-# Initialize file handling
-file_path = "nmea_output.txt"
-output_buffer = ""
-
 try:
     while True:
         try:
@@ -121,23 +108,15 @@ try:
             print(data)
             nmea_output = convert_to_nmea(data)
             if nmea_output:
-                output_buffer += nmea_output  # Add to buffer
-                if output_buffer.count('$') >= 10:  # Check if buffer has 100 NMEA messages
-                    with open(file_path, "a") as file:
-                        file.write(output_buffer)  # Write to file
-                    output_buffer = ""  # Reset buffer
-                
-                # Sending to MQTT
-                start = 0
-                while True:
-                    start_idx = output_buffer.find('$', start)
-                    end_idx = output_buffer.find('$', start_idx + 1)
-                    if start_idx != -1 and end_idx != -1:
-                        message = output_buffer[start_idx:end_idx]
-                        client.publish(topic, message)
-                        start = end_idx
-                    else:
-                        break
+                print('NMEA-style output:')
+                print(nmea_output)
+                # Publish to MQTT broker
+                result = client.publish(topic, nmea_output)
+                status = result[0]
+                if status == 0:
+                    print(f"Sent `{nmea_output}` to topic `{topic}`")
+                else:
+                    print(f"Failed to send message to topic {topic}")
         except usb.core.USBError as e:
             print(f'Interface {interface}: Error reading data: {e}')
         time.sleep(0.2)
