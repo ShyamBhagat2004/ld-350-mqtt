@@ -1,5 +1,4 @@
-Here is the combined content of both files into a single Markdown file:
-
+---
 ```markdown
 # Project Documentation: Python Application for LD-350 Lightning Detector Data Handling
 
