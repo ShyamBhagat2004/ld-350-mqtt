@@ -153,7 +153,7 @@ if dev is None:
 
 interface = 0
 endpoint_out = 0x02
-endpoint_in = 0x81
+endpoint_in = 0x81 
 
 if dev.is_kernel_driver_active(interface):
     try:
