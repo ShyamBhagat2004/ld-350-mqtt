@@ -7,7 +7,7 @@
 This document details the Python application designed to interface with LD-350 lightning detectors. The application reads data, converts it to NMEA format, and transmits it over MQTT.
 
 ## Requirements
-- **Python Version**: 3.8+
+- **Python Version**: 3.10+
 - **Dependencies**:
   - `usb.core`
   - `usb.util`
