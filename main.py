@@ -90,6 +90,7 @@ if gps_dev is None:
 
 gps_interface = 1
 gps_endpoint_in = 0x82
+gps_endpoint_out = 0x01
 
 # Initialize the USB device configurations, claim interfaces, and detach kernel drivers
 def initialize_usb_device(device, interface):
@@ -113,6 +114,7 @@ initialize_usb_device(gps_dev, gps_interface)
 
 # Start a thread to send keep-alive packets to the LD-350 device.
 threading.Thread(target=send_keep_alive, args=(ld_dev, ld_endpoint_out), daemon=True).start()
+threading.Thread(target=send_keep_alive, args=(gps_dev, gps_endpoint_out), daemon=True).start()
 
 # Thread for emptying the file periodically
 threading.Thread(target=empty_file_every_120_seconds, args=("nmea_output.txt",), daemon=True).start()
