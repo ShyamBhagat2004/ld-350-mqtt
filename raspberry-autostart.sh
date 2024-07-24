@@ -14,7 +14,7 @@ env >> $LOG_FILE
 
 # Wait for network to be ready
 echo "Waiting for network to be ready..." >> $LOG_FILE 2>&1
-sleep 60  # Wait for 30 seconds
+sleep 60  # Wait for 60 seconds
 
 # Check if the directory exists and remove it if it does
 if [ -d "$DIR" ]; then
@@ -44,10 +44,27 @@ source venvpi/bin/activate >> $LOG_FILE 2>&1
 echo "Installing requirements from requirements.txt" >> $LOG_FILE 2>&1
 pip install -r requirements.txt >> $LOG_FILE 2>&1
 
+# Set the MQTT_TAG environment variable based on the device hostname
+echo "Setting MQTT_TAG environment variable based on hostname" >> $LOG_FILE 2>&1
+case "$(hostname)" in
+    "rpi1")
+        export MQTT_TAG="NMEA_Lightning_1"
+        ;;
+    "rpi2")
+        export MQTT_TAG="NMEA_Lightning_2"
+        ;;
+    "rpi3")
+        export MQTT_TAG="NMEA_Lightning_3"
+        ;;
+    *)
+        export MQTT_TAG="NMEA_Lightning"
+        ;;
+esac
+echo "MQTT_TAG set to $MQTT_TAG" >> $LOG_FILE 2>&1
+
 # Run main.py
 echo "Running main.py" >> $LOG_FILE 2>&1
 python main.py >> $LOG_FILE 2>&1
 
 # End logging
-echo "Script finished at $(date)" >> $LOG_FILE 2>&1
-
+echo "Script finished at $(date)" >> $LOG_FILE 2>&1s
