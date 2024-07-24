@@ -4,7 +4,6 @@ import sys
 import time
 import threading
 import paho.mqtt.client as mqtt_client
-import os
 
 # Function to empty the NMEA data file every 30 seconds for clean up and to avoid large, unwieldy files.
 def empty_file_every_120_seconds(file_path):
@@ -55,7 +54,7 @@ def on_publish(client, userdata, mid):
 # Configuration settings for MQTT.
 broker = "broker.mqtt.cool"
 port = 1883
-topic = os.getenv("MQTT_TAG", "NMEA_Lightning_Default")  # Read the MQTT tag from environment variable
+topic = "NMEA_Lightning_1"  # Change this to "NMEA_Lightning_2" and "NMEA_Lightning_3" for other RPIs
 client_id = f"python-mqtt-{int(time.time())}"
 
 client = mqtt_client.Client(client_id=client_id, protocol=mqtt_client.MQTTv311, transport="tcp")
@@ -77,6 +76,10 @@ if ld_dev is None:
     print("LD-350 device not found")
     sys.exit(1)
 
+ld_interface = 0
+ld_endpoint_out = 0x02
+ld_endpoint_in = 0x81
+
 # USB device setup for GPS USB reader
 gps_vendor_id = 0x1546
 gps_product_id = 0x01a7
@@ -85,24 +88,9 @@ if gps_dev is None:
     print("GPS USB reader not found")
     sys.exit(1)
 
-# Function to find the correct endpoints
-def find_endpoints(device):
-    cfg = device.get_active_configuration()
-    intf = cfg[(0, 0)]
-
-    ep_in = usb.util.find_descriptor(
-        intf,
-        custom_match = lambda e: 
-            usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN
-    )
-
-    ep_out = usb.util.find_descriptor(
-        intf,
-        custom_match = lambda e: 
-            usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT
-    )
-
-    return ep_in.bEndpointAddress, ep_out.bEndpointAddress
+gps_interface = 1
+gps_endpoint_in = 0x82
+gps_endpoint_out = 0x01
 
 # Initialize the USB device configurations, claim interfaces, and detach kernel drivers
 def initialize_usb_device(device, interface):
@@ -121,14 +109,8 @@ def initialize_usb_device(device, interface):
         print(f"Error setting up device on interface {interface}: {e}")
         sys.exit(1)
 
-ld_interface = 0
-gps_interface = 1
-
 initialize_usb_device(ld_dev, ld_interface)
 initialize_usb_device(gps_dev, gps_interface)
-
-ld_endpoint_in, ld_endpoint_out = find_endpoints(ld_dev)
-gps_endpoint_in, gps_endpoint_out = find_endpoints(gps_dev)
 
 # Start a thread to send keep-alive packets to the LD-350 device.
 threading.Thread(target=send_keep_alive, args=(gps_dev, gps_endpoint_out), daemon=True).start()
