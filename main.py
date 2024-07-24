@@ -8,7 +8,7 @@ import paho.mqtt.client as mqtt_client
 # Function to empty the NMEA data file every 30 seconds for clean up and to avoid large, unwieldy files.
 def empty_file_every_120_seconds(file_path):
     while True:
-        time.sleep(30)
+        time.sleep(120)
         with open(file_path, "w+") as file:
             file.write("")  
         print("File has been emptied")
@@ -54,7 +54,7 @@ def on_publish(client, userdata, mid):
 # Configuration settings for MQTT.
 broker = "broker.mqtt.cool"
 port = 1883
-topic = "NMEA_Lightning"
+topic = "NMEA_Lightning_1"  # Change this to "NMEA_Lightning_2" and "NMEA_Lightning_3" for other RPIs
 client_id = f"python-mqtt-{int(time.time())}"
 
 client = mqtt_client.Client(client_id=client_id, protocol=mqtt_client.MQTTv311, transport="tcp")
@@ -110,12 +110,10 @@ def initialize_usb_device(device, interface):
         sys.exit(1)
 
 initialize_usb_device(ld_dev, ld_interface)
-
 initialize_usb_device(gps_dev, gps_interface)
 
 # Start a thread to send keep-alive packets to the LD-350 device.
 threading.Thread(target=send_keep_alive, args=(gps_dev, gps_endpoint_out), daemon=True).start()
-
 threading.Thread(target=send_keep_alive, args=(ld_dev, ld_endpoint_out), daemon=True).start()
         
 # Thread for emptying the file periodically
