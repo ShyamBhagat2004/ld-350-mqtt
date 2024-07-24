@@ -55,8 +55,9 @@ def on_publish(client, userdata, mid):
 # Configuration settings for MQTT.
 broker = "broker.mqtt.cool"
 port = 1883
-topic = os.getenv("MQTT_TAG", "NMEA_Lightning_Default")  # Read the MQTT tag from environment variable
 client_id = f"python-mqtt-{int(time.time())}"
+
+# Debug print to confirm the topic
 
 client = mqtt_client.Client(client_id=client_id, protocol=mqtt_client.MQTTv311, transport="tcp")
 client.on_connect = on_connect
@@ -145,7 +146,7 @@ try:
             # Publish combined data to MQTT
             filtered_combined_data = "\n".join(filtered_lines)
             client.publish(topic, filtered_combined_data)
-            print(f"Published combined data to MQTT: {filtered_combined_data} on topic {topic}")
+            print(f"Published combined data to MQTT on topic {topic}: {filtered_combined_data}")
             
         except usb.core.USBError as e:
             print(f"USB Error: {e}")
