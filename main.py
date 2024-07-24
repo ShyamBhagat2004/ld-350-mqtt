@@ -4,8 +4,9 @@ import sys
 import time
 import threading
 import paho.mqtt.client as mqtt_client
+import os
 
-# Function to empty the NMEA data file every 30 seconds for clean up and to avoid large, unwieldy files.
+# Function to empty the NMEA data file every 120 seconds for clean up and to avoid large, unwieldy files.
 def empty_file_every_120_seconds(file_path):
     while True:
         time.sleep(120)
@@ -54,7 +55,7 @@ def on_publish(client, userdata, mid):
 # Configuration settings for MQTT.
 broker = "broker.mqtt.cool"
 port = 1883
-topic = "NMEA_Lightning_1"  # Change this to "NMEA_Lightning_2" and "NMEA_Lightning_3" for other RPIs
+topic = os.getenv("MQTT_TAG", "NMEA_Lightning_Default")  # Read the MQTT tag from environment variable
 client_id = f"python-mqtt-{int(time.time())}"
 
 client = mqtt_client.Client(client_id=client_id, protocol=mqtt_client.MQTTv311, transport="tcp")
@@ -144,7 +145,7 @@ try:
             # Publish combined data to MQTT
             filtered_combined_data = "\n".join(filtered_lines)
             client.publish(topic, filtered_combined_data)
-            print(f"Published combined data to MQTT: {filtered_combined_data}")
+            print(f"Published combined data to MQTT: {filtered_combined_data} on topic {topic}")
             
         except usb.core.USBError as e:
             print(f"USB Error: {e}")
