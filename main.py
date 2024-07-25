@@ -55,9 +55,11 @@ def on_publish(client, userdata, mid):
 # Configuration settings for MQTT.
 broker = "broker.mqtt.cool"
 port = 1883
+topic = os.getenv("MQTT_TAG", "NMEA_Lightning_Default").strip()  # Read the MQTT tag from environment variable
 client_id = f"python-mqtt-{int(time.time())}"
 
 # Debug print to confirm the topic
+print(f"Using MQTT topic: {topic}")
 
 client = mqtt_client.Client(client_id=client_id, protocol=mqtt_client.MQTTv311, transport="tcp")
 client.on_connect = on_connect
