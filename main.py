@@ -5,6 +5,7 @@ import time
 import threading
 import paho.mqtt.client as mqtt_client
 import os
+import datetime
 
 # Function to empty the NMEA data file every 120 seconds for clean up and to avoid large, unwieldy files.
 def empty_file_every_120_seconds(file_path):
@@ -119,9 +120,13 @@ initialize_usb_device(gps_dev, gps_interface)
 # Start a thread to send keep-alive packets to the LD-350 device.
 threading.Thread(target=send_keep_alive, args=(gps_dev, gps_endpoint_out), daemon=True).start()
 threading.Thread(target=send_keep_alive, args=(ld_dev, ld_endpoint_out), daemon=True).start()
-        
+
 # Thread for emptying the file periodically
 threading.Thread(target=empty_file_every_120_seconds, args=("nmea_output.txt",), daemon=True).start()
+
+# Function to get the current timestamp in ISO format
+def get_current_timestamp():
+    return datetime.datetime.utcnow().isoformat() + 'Z'
 
 # Main loop to read data from both USB devices, merge them, and publish via MQTT.
 try:
@@ -145,10 +150,12 @@ try:
                 for line in filtered_lines:
                     file.write(line + "\n")
             
-            # Publish combined data to MQTT
+            # Publish combined data to MQTT with timestamp
+            timestamp = get_current_timestamp()
             filtered_combined_data = "\n".join(filtered_lines)
-            client.publish(topic, filtered_combined_data)
-            print(f"Published combined data to MQTT on topic {topic}: {filtered_combined_data}")
+            data_with_timestamp = f"{timestamp}\n{filtered_combined_data}"
+            client.publish(topic, data_with_timestamp)
+            print(f"Published combined data to MQTT on topic {topic}: {data_with_timestamp}")
             
         except usb.core.USBError as e:
             print(f"USB Error: {e}")
