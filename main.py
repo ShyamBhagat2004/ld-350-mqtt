@@ -159,7 +159,7 @@ try:
             
         except usb.core.USBError as e:
             print(f"USB Error: {e}")
-        time.sleep(0.5)  # Adjust the sleep time to reduce the frequency of messages
+        #time.sleep(0.5)  # Adjust the sleep time to reduce the frequency of messages
 
 except KeyboardInterrupt:
     print("Interrupted by user")
